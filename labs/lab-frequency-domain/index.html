@@ -1,0 +1,2939 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width,minimum-scale=1">
+
+  <title>Lab - Frequency Domain</title>
+  <meta name="description" content="        Lab - Frequency Domain    Frequency Domain In this lab we learn the basics of convolution, sine waves, and fourier transforms.    %matplotlib inlinei...">
+
+  <link rel="canonical" href="https://jupyterbook.org/bai-book/labs/lab-frequency-domain/">
+  <link rel="alternate" type="application/rss+xml" title="CSCI 7000 - Advances in Artificial Intelligence and Neuroscience" href="https://jupyterbook.org/bai-book/feed.xml">
+
+  <meta property="og:url"         content="https://jupyterbook.org/bai-book/labs/lab-frequency-domain/" />
+<meta property="og:type"        content="article" />
+<meta property="og:title"       content="Lab - Frequency Domain" />
+<meta property="og:description" content="        Lab - Frequency Domain    Frequency Domain In this lab we learn the basics of convolution, sine waves, and fourier transforms.    %matplotlib inlinei..." />
+<meta property="og:image"       content="https://jupyterbook.org/bai-book/images/brain_ai_logo.png" />
+
+<meta name="twitter:card" content="summary">
+
+
+  <script type="application/ld+json">
+  {
+  "@context": "http://schema.org",
+  "@type": "NewsArticle",
+  "mainEntityOfPage": "https://jupyterbook.org/bai-book/labs/lab-frequency-domain/",
+  "headline": "Lab - Frequency Domain",
+  "datePublished": "2020-02-09T07:54:06-07:00",
+  "dateModified": "2020-02-09T07:54:06-07:00",
+  "description": "        Lab - Frequency Domain    Frequency Domain In this lab we learn the basics of convolution, sine waves, and fourier transforms.    %matplotlib inlinei...",
+  "author": {
+    "@type": "Person",
+    "name": "Tom Yeh"
+  },
+  "publisher": {
+    "@type": "Organization",
+    "name": "Data 100 at UC Berkeley",
+    "logo": {
+      "@type": "ImageObject",
+      "url": "https://jupyterbook.org/bai-book",
+      "width": 60,
+      "height": 60
+    }
+  },
+  "image": {
+    "@type": "ImageObject",
+    "url": "https://jupyterbook.org/bai-book",
+    "height": 60,
+    "width": 60
+  }
+}
+
+  </script>
+  <link rel="stylesheet" href="/bai-book/assets/css/styles.css">
+
+  <!-- <link rel="manifest" href="/manifest.json"> -->
+  <!-- <link rel="mask-icon" href="/safari-pinned-tab.svg" color="#efae0a"> -->
+  <meta name="msapplication-TileColor" content="#da532c">
+  <meta name="msapplication-TileImage" content="/mstile-144x144.png">
+  <meta name="theme-color" content="#233947">
+
+  <!-- Favicon -->
+  <link rel="shortcut icon" type="image/x-icon" href="/bai-book/images/logo/favicon.ico">
+
+  <!-- MathJax Config -->
+  <!-- Allow inline math using $ and automatically break long math lines -->
+<!-- (mostly) copied from nbconvert configuration -->
+<!-- https://github.com/jupyter/nbconvert/blob/master/nbconvert/templates/html/mathjax.tpl -->
+<script type="text/x-mathjax-config">
+MathJax.Hub.Config({
+    tex2jax: {
+        inlineMath: [ ['$','$'], ["\\(","\\)"] ],
+        displayMath: [ ['$$','$$'], ["\\[","\\]"] ],
+        processEscapes: true,
+        processEnvironments: true
+    },
+    // Center justify equations in code and markdown cells. Elsewhere
+    // we use CSS to left justify single line equations in code cells.
+    displayAlign: 'center',
+    "HTML-CSS": {
+        styles: {'.MathJax_Display': {"margin": 0}},
+        linebreaks: { automatic: true },
+    },
+    
+});
+</script>
+<script src='https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-AMS_HTML' async></script>
+
+
+  <!-- DOM updating function -->
+  <script src="/bai-book/assets/js/page/dom-update.js"></script>
+
+  <!-- Selectors for elements on the page -->
+  <script src="/bai-book/assets/js/page/documentSelectors.js"></script>
+
+  <!-- Define some javascript variables that will be useful in other javascript -->
+  <script>
+    const site_basename = '/bai-book';
+  </script>
+
+  <!-- Add AnchorJS to let headers be linked -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/anchor-js/4.2.0/anchor.min.js" async></script>
+  <script src="/bai-book/assets/js/page/anchors.js" async></script>
+
+  <!-- Include Turbolinks to make page loads fast -->
+  <!-- https://github.com/turbolinks/turbolinks -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/turbolinks/5.2.0/turbolinks.js" async></script>
+  <meta name="turbolinks-cache-control" content="no-cache">
+
+  <!-- Load nbinteract for widgets -->
+  
+
+  <!-- Load Thebelab for interactive widgets -->
+  <!-- Include Thebelab for interactive code if it's enabled -->
+
+
+
+  <!-- Load the auto-generating TOC (non-async otherwise the TOC won't load w/ turbolinks) -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/tocbot/4.8.1/tocbot.min.js" async></script>
+  <script src="/bai-book/assets/js/page/tocbot.js"></script>
+
+  <!-- Google analytics -->
+  
+<!-- Global site tag (gtag.js) - Google Analytics -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=UA-52617120-7"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'UA-52617120-7');
+</script>
+
+
+
+  <!-- Clipboard copy button -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.4/clipboard.min.js" async></script>
+
+  <!-- Load custom website scripts -->
+  <script src="/bai-book/assets/js/scripts.js" async></script>
+
+  <!-- Load custom user CSS and JS  -->
+  <script src="/bai-book/assets/custom/custom.js" async></script>
+  <link rel="stylesheet" href="/bai-book/assets/custom/custom.css">
+
+  <!-- Update interact links w/ REST param, is defined in includes so we can use templates -->
+  
+
+  <!-- Lunr search code - will only be executed on the /search page -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/lunr.js/2.3.6/lunr.min.js" async></script>
+  <script>var initQuery = function() {
+  // See if we have a search box
+  var searchInput = document.querySelector('input#lunr_search');
+  if (searchInput === null) {
+    return;
+  }
+
+  // Function to parse our lunr cache
+  var idx = lunr(function () {
+    this.field('title')
+    this.field('excerpt')
+    this.field('categories')
+    this.field('tags')
+    this.ref('id')
+
+    this.pipeline.remove(lunr.trimmer)
+
+    for (var item in store) {
+      this.add({
+        title: store[item].title,
+        excerpt: store[item].excerpt,
+        categories: store[item].categories,
+        tags: store[item].tags,
+        id: item
+      })
+    }
+  });
+
+  // Run search upon keyup
+  searchInput.addEventListener('keyup', function () {
+    var resultdiv = document.querySelector('#results');
+    var query = document.querySelector("input#lunr_search").value.toLowerCase();
+    var result =
+      idx.query(function (q) {
+        query.split(lunr.tokenizer.separator).forEach(function (term) {
+          q.term(term, { boost: 100 })
+          if(query.lastIndexOf(" ") != query.length-1){
+            q.term(term, {  usePipeline: false, wildcard: lunr.Query.wildcard.TRAILING, boost: 10 })
+          }
+          if (term != ""){
+            q.term(term, {  usePipeline: false, editDistance: 1, boost: 1 })
+          }
+        })
+      });
+
+      // Empty the results div
+      while (resultdiv.firstChild) {
+        resultdiv.removeChild(resultdiv.firstChild);
+      }
+
+    resultdiv.insertAdjacentHTML('afterbegin', '<p class="results__found">'+result.length+' Result(s) found</p>');
+    for (var item in result) {
+      var ref = result[item].ref;
+      if(store[ref].teaser){
+        var searchitem =
+          '<div class="list__item">'+
+            '<article class="archive__item" itemscope itemtype="https://schema.org/CreativeWork">'+
+              '<h2 class="archive__item-title" itemprop="headline">'+
+                '<a href="'+store[ref].url+'" rel="permalink">'+store[ref].title+'</a>'+
+              '</h2>'+
+              '<div class="archive__item-teaser">'+
+                '<img src="'+store[ref].teaser+'" alt="">'+
+              '</div>'+
+              '<p class="archive__item-excerpt" itemprop="description">'+store[ref].excerpt.split(" ").splice(0,20).join(" ")+'...</p>'+
+            '</article>'+
+          '</div>';
+      }
+      else{
+    	  var searchitem =
+          '<div class="list__item">'+
+            '<article class="archive__item" itemscope itemtype="https://schema.org/CreativeWork">'+
+              '<h2 class="archive__item-title" itemprop="headline">'+
+                '<a href="'+store[ref].url+'" rel="permalink">'+store[ref].title+'</a>'+
+              '</h2>'+
+              '<p class="archive__item-excerpt" itemprop="description">'+store[ref].excerpt.split(" ").splice(0,20).join(" ")+'...</p>'+
+            '</article>'+
+          '</div>';
+      }
+      resultdiv.insertAdjacentHTML('beforeend', searchitem);
+    }
+  });
+};
+
+initFunction(initQuery);
+</script>
+
+  <!-- Load JS that depends on site variables -->
+  <script src="/bai-book/assets/js/page/copy-button.js" async></script>
+
+  <!-- Hide cell code -->
+  <script src="/bai-book/assets/js/page/hide-cell.js" async></script>
+
+  <!-- Printing the screen -->
+  <!-- Include nbinteract for interactive widgets -->
+<script src="https://printjs-4de6.kxcdn.com/print.min.js" async></script>
+<script>
+printContent = () => {
+    // MathJax displays a second version of any math for assistive devices etc.
+    // This prevents double-rendering in the PDF output.
+    var ignoreAssistList = [];
+    assistives = document.querySelectorAll('.MathJax_Display span.MJX_Assistive_MathML').forEach((element, index) => {
+        var thisId = 'MathJax-assistive-' + index.toString();
+        element.setAttribute('id', thisId);
+        ignoreAssistList.push(thisId)
+    });
+
+    // Print the actual content object
+    printJS({
+        printable: 'textbook_content',
+        type: 'html',
+        css: "/bai-book/assets/css/styles.css",
+        style: "#textbook_content {padding-top: 40px};",
+        scanStyles: false,
+        targetStyles: ["*"],
+        ignoreElements: ignoreAssistList,
+        documentTitle: "Made with Jupyter Book"
+    })
+};
+
+initPrint = () => {
+    document.querySelector('#interact-button-print').addEventListener('click', printContent)
+}
+
+initFunction(initPrint)
+</script>
+
+</head>
+
+  <body>
+    <!-- Include the ThebeLab config so it gets reloaded on each page -->
+    <script type="text/x-thebe-config">{
+    requestKernel: true,
+    binderOptions: {
+    repo: "jupyter/jupyter-book",
+    ref: "gh-pages",
+    },
+    codeMirrorConfig: {
+    theme: "abcdef",
+    mode: "python"
+    },
+    kernelOptions: {
+    kernelName: "python3",
+    path: "content/labs/lab-frequency-domain"
+    }
+}
+</script>
+
+    <!-- .js-show-sidebar shows sidebar by default -->
+    <div id="js-textbook" class="c-textbook js-show-sidebar">
+      
+
+
+
+<nav id="js-sidebar" class="c-textbook__sidebar">
+  <a href="/"><img src="/bai-book/images/brain_ai_logo.png" class="textbook_logo" id="sidebar-logo" alt="textbook logo" data-turbolinks-permanent/></a>
+  <h2 class="c-sidebar__title">CSCI 7000 - Advances in Artificial Intelligence and Neuroscience</h2>
+  <ul class="c-sidebar__chapters">
+    
+      
+      
+        <li><h2 class="c-sidebar__title">Course</li>
+        
+      
+      
+
+      
+      
+      
+      
+
+      
+      
+      <li class="c-sidebar__chapter" data-url="/home">
+        <a class="c-sidebar__entry"
+          href="/bai-book/home.html"
+        >
+          
+          Home
+        </a>
+      </li>
+
+      
+      
+
+      
+
+      
+      
+
+      
+
+      
+    
+      
+      
+
+      
+      
+      
+      
+
+      
+      
+      <li class="c-sidebar__chapter" data-url="/course/syllabus">
+        <a class="c-sidebar__entry"
+          href="/bai-book/course/syllabus.html"
+        >
+          
+          Syllabus
+        </a>
+      </li>
+
+      
+      
+
+      
+
+      
+      
+
+      
+
+      
+    
+      
+      
+
+      
+      
+      
+      
+
+      
+      
+      <li class="c-sidebar__chapter" data-url="/course/instructors">
+        <a class="c-sidebar__entry"
+          href="/bai-book/course/instructors.html"
+        >
+          
+          Instructors
+        </a>
+      </li>
+
+      
+      
+
+      
+
+      
+      
+
+      
+
+      
+    
+      
+      
+
+      
+      
+      
+      
+
+      
+      
+      <li class="c-sidebar__chapter" data-url="/course/schedule">
+        <a class="c-sidebar__entry"
+          href="/bai-book/course/schedule.html"
+        >
+          
+          Schedule
+        </a>
+      </li>
+
+      
+      
+
+      
+
+      
+      
+
+      
+
+      
+    
+      
+      
+
+      
+      
+      
+      
+
+      
+      
+      <li class="c-sidebar__chapter" data-url="/course/papers">
+        <a class="c-sidebar__entry"
+          href="/bai-book/course/papers.html"
+        >
+          
+          Papers
+        </a>
+      </li>
+
+      
+      
+
+      
+
+      
+      
+
+      
+
+      
+    
+      
+      
+        <li class="c-sidebar__divider"></li>
+        
+      
+      
+        <li><h2 class="c-sidebar__title">Units</li>
+        
+      
+      
+
+      
+      
+      
+      
+
+      
+      
+      <li class="c-sidebar__chapter" data-url="/units/intro">
+        <a class="c-sidebar__entry"
+          href="/bai-book/units/intro.html"
+        >
+          
+            1.
+          
+          Introduction
+        </a>
+      </li>
+
+      
+      
+
+      
+
+      
+      
+
+      
+        
+
+        
+
+        <ul class="c-sidebar__sections u-hidden-visually">
+          
+            
+            
+
+            
+            
+            
+            
+
+            <li class="c-sidebar__section" data-url="/papers/davidson-2003/index">
+              <a class="c-sidebar__entry"
+                href="/bai-book/papers/davidson-2003/index.html"
+              >
+                
+                Paper - Imaging the developing brain with fMRI
+              </a>
+            </li>
+            
+            
+          
+            
+            
+
+            
+            
+            
+            
+
+            <li class="c-sidebar__section" data-url="/videos/principles-of-fmri/1-introduction-to-fmri/index">
+              <a class="c-sidebar__entry"
+                href="/bai-book/videos/principles-of-fmri/1-introduction-to-fmri/index.html"
+              >
+                
+                Video - Introduction to fMRI
+              </a>
+            </li>
+            
+            
+          
+            
+            
+
+            
+            
+            
+            
+
+            <li class="c-sidebar__section" data-url="/labs/lab-Jupyter_tour/index">
+              <a class="c-sidebar__entry"
+                href="/bai-book/labs/lab-Jupyter_tour/index.html"
+              >
+                
+                Lab - Jupyter notebook tour
+              </a>
+            </li>
+            
+            
+          
+            
+            
+
+            
+            
+            
+            
+
+            <li class="c-sidebar__section" data-url="/labs/lab-Personal_introduction/index">
+              <a class="c-sidebar__entry"
+                href="/bai-book/labs/lab-Personal_introduction/index.html"
+              >
+                
+                Lab - About Me
+              </a>
+            </li>
+            
+            
+          
+        </ul>
+      
+
+      
+    
+      
+      
+
+      
+      
+      
+      
+
+      
+      
+      <li class="c-sidebar__chapter" data-url="/units/fmri-basics">
+        <a class="c-sidebar__entry"
+          href="/bai-book/units/fmri-basics.html"
+        >
+          
+            2.
+          
+          fMRI Basics
+        </a>
+      </li>
+
+      
+      
+
+      
+
+      
+      
+
+      
+        
+
+        
+
+        <ul class="c-sidebar__sections u-hidden-visually">
+          
+            
+            
+
+            
+            
+            
+            
+
+            <li class="c-sidebar__section" data-url="/papers/pinel-2007/index">
+              <a class="c-sidebar__entry"
+                href="/bai-book/papers/pinel-2007/index.html"
+              >
+                
+                Paper -  Fast reproducible identification and large-scale databasing of individual functional cognitive networks
+              </a>
+            </li>
+            
+            
+          
+            
+            
+
+            
+            
+            
+            
+
+            <li class="c-sidebar__section" data-url="/videos/principles-of-fmri/5-basic-mr-physics/index">
+              <a class="c-sidebar__entry"
+                href="/bai-book/videos/principles-of-fmri/5-basic-mr-physics/index.html"
+              >
+                
+                Video - Basic MR Physics
+              </a>
+            </li>
+            
+            
+          
+            
+            
+
+            
+            
+            
+            
+
+            <li class="c-sidebar__section" data-url="/videos/principles-of-fmri/6-image-formation/index">
+              <a class="c-sidebar__entry"
+                href="/bai-book/videos/principles-of-fmri/6-image-formation/index.html"
+              >
+                
+                Video - Image Formation
+              </a>
+            </li>
+            
+            
+          
+            
+            
+
+            
+            
+            
+            
+
+            <li class="c-sidebar__section" data-url="/videos/principles-of-fmri/8-fmri-signal-and-bold-physiology/index">
+              <a class="c-sidebar__entry"
+                href="/bai-book/videos/principles-of-fmri/8-fmri-signal-and-bold-physiology/index.html"
+              >
+                
+                Video - fMRI Signal and Bold Physiology
+              </a>
+            </li>
+            
+            
+          
+            
+            
+
+            
+            
+            
+            
+
+            <li class="c-sidebar__section" data-url="/videos/principles-of-fmri/9-fmri-artifacts-and-noise/index">
+              <a class="c-sidebar__entry"
+                href="/bai-book/videos/principles-of-fmri/9-fmri-artifacts-and-noise/index.html"
+              >
+                
+                Video - fMRI Artifacts and Noise
+              </a>
+            </li>
+            
+            
+          
+            
+            
+
+            
+            
+            
+            
+
+            <li class="c-sidebar__section" data-url="/labs/lab-image/index">
+              <a class="c-sidebar__entry"
+                href="/bai-book/labs/lab-image/index.html"
+              >
+                
+                Lab - Visualize Brain Images
+              </a>
+            </li>
+            
+            
+          
+            
+            
+
+            
+            
+            
+            
+
+            <li class="c-sidebar__section" data-url="/labs/lab-signal-processing/index">
+              <a class="c-sidebar__entry"
+                href="/bai-book/labs/lab-signal-processing/index.html"
+              >
+                
+                Lab - Signal Processing
+              </a>
+            </li>
+            
+            
+          
+            
+            
+
+            
+            
+            
+            
+
+            <li class="c-sidebar__section" data-url="/labs/lab-frequency-domain/index">
+              <a class="c-sidebar__entry"
+                href="/bai-book/labs/lab-frequency-domain/index.html"
+              >
+                
+                Lab - Frequency Domain
+              </a>
+            </li>
+            
+            
+          
+        </ul>
+      
+
+      
+    
+      
+      
+
+      
+      
+      
+      
+
+      
+      
+      <li class="c-sidebar__chapter" data-url="/units/fmri-analysis">
+        <a class="c-sidebar__entry"
+          href="/bai-book/units/fmri-analysis.html"
+        >
+          
+            3.
+          
+          fMRI Analysis
+        </a>
+      </li>
+
+      
+      
+
+      
+
+      
+      
+
+      
+
+      
+    
+      
+      
+
+      
+      
+      
+      
+
+      
+      
+      <li class="c-sidebar__chapter" data-url="/units/machine-learning">
+        <a class="c-sidebar__entry"
+          href="/bai-book/units/machine-learning.html"
+        >
+          
+            4.
+          
+          Machine Learning
+        </a>
+      </li>
+
+      
+      
+
+      
+
+      
+      
+
+      
+
+      
+    
+      
+      
+
+      
+      
+      
+      
+
+      
+      
+      <li class="c-sidebar__chapter" data-url="/units/fmri-machine-learning">
+        <a class="c-sidebar__entry"
+          href="/bai-book/units/fmri-machine-learning.html"
+        >
+          
+            5.
+          
+          fMRI and Machine Learning
+        </a>
+      </li>
+
+      
+      
+
+      
+
+      
+      
+
+      
+
+      
+    
+      
+      
+
+      
+      
+      
+      
+
+      
+      
+      <li class="c-sidebar__chapter" data-url="/units/fnirs-basics">
+        <a class="c-sidebar__entry"
+          href="/bai-book/units/fnirs-basics.html"
+        >
+          
+            6.
+          
+          fNIRS Basics
+        </a>
+      </li>
+
+      
+      
+
+      
+
+      
+      
+
+      
+
+      
+    
+      
+      
+
+      
+      
+      
+      
+
+      
+      
+      <li class="c-sidebar__chapter" data-url="/units/fnirs-analysis">
+        <a class="c-sidebar__entry"
+          href="/bai-book/units/fnirs-analysis.html"
+        >
+          
+            7.
+          
+          fNIRS Analysis
+        </a>
+      </li>
+
+      
+      
+
+      
+
+      
+      
+
+      
+
+      
+    
+      
+      
+
+      
+      
+      
+      
+
+      
+      
+      <li class="c-sidebar__chapter" data-url="/units/fnirs-machine-learning">
+        <a class="c-sidebar__entry"
+          href="/bai-book/units/fnirs-machine-learning.html"
+        >
+          
+            8.
+          
+          fNIRS and Machine Learning
+        </a>
+      </li>
+
+      
+      
+
+      
+
+      
+      
+
+      
+
+      
+    
+  </ul>
+  <p class="sidebar_footer">Powered by <a href="https://jupyterbook.org">Jupyter Book</a></p>
+</nav>
+
+      
+      <div class="c-topbar" id="top-navbar">
+  <!-- We show the sidebar by default so we use .is-active -->
+  <div class="c-topbar__buttons">
+    <button
+      id="js-sidebar-toggle"
+      class="hamburger hamburger--arrowalt is-active"
+    >
+      <span class="hamburger-box">
+        <span class="hamburger-inner"></span>
+      </span>
+    </button>
+    <div class="buttons">
+<div class="download-buttons-dropdown">
+    <button id="dropdown-button-trigger" class="interact-button"><img src="/bai-book/assets/images/download-solid.svg" alt="Download" /></button>
+    <div class="download-buttons">
+        <a href="/bai-book/content/labs/lab-frequency-domain/index.ipynb" download>
+        <button id="interact-button-download" class="interact-button">.ipynb</button>
+        </a>
+        
+        <a id="interact-button-print"><button id="interact-button-download" class="interact-button">.pdf</button></a>
+    </div>
+</div>
+
+
+  
+  
+  
+  
+
+
+</div>
+
+  </div>
+  <!-- Empty sidebar placeholder that we'll auto-fill with javascript -->
+  <aside class="sidebar__right">
+    <header><h4 class="nav__title"><img src="/bai-book/assets/images/list-solid.svg" alt="Search" />   On this page</h4></header>
+    <nav class="onthispage">
+    </nav>
+  </aside>
+  <a href="/bai-book/search.html" class="topbar-right-button" id="search-button">
+    <img src="/bai-book/assets/images/search-solid.svg" alt="Search" />
+  </a>
+</div>
+
+      <main class="c-textbook__page" tabindex="-1">
+            <div class="c-textbook__content" id="textbook_content">
+                  <main class="jupyter-page">
+    <div id="page-info"><div id="page-title">Lab - Frequency Domain</div>
+</div>
+    <div class="jb_cell">
+
+<div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h1 id="Frequency-Domain">Frequency Domain<a class="anchor-link" href="#Frequency-Domain"> </a></h1><p>In this lab we learn the basics of convolution, sine waves, and fourier transforms.</p>
+
+</div>
+</div>
+</div>
+</div>
+
+<div class="jb_cell">
+
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="o">%</span><span class="k">matplotlib</span> inline
+
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">from</span> <span class="nn">numpy</span> <span class="k">import</span> <span class="n">sin</span><span class="p">,</span> <span class="n">pi</span><span class="p">,</span> <span class="n">arange</span>
+<span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
+<span class="kn">from</span> <span class="nn">ipywidgets</span> <span class="k">import</span> <span class="n">interact_manual</span><span class="p">,</span> <span class="n">interact</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+</div>
+</div>
+
+<div class="jb_cell">
+
+<div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h1 id="Modeling-a-Signal">Modeling a Signal<a class="anchor-link" href="#Modeling-a-Signal"> </a></h1>
+</div>
+</div>
+</div>
+</div>
+
+<div class="jb_cell">
+
+<div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>Let's create a model of a simulated signal using a DataFrame. Each row represensts a sine wave component. The columns encode the frequency, amplitude, and phase of each sine wave component.</p>
+
+</div>
+</div>
+</div>
+</div>
+
+<div class="jb_cell">
+
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
+
+<span class="n">model</span> <span class="o">=</span> <span class="p">{}</span>
+<span class="n">model</span><span class="p">[</span><span class="s1">&#39;components&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">({</span>
+    <span class="s1">&#39;freq&#39;</span><span class="p">:</span> <span class="p">[</span><span class="mi">3</span><span class="p">,</span> <span class="mi">10</span><span class="p">,</span> <span class="mi">5</span> <span class="p">,</span><span class="mi">15</span><span class="p">,</span> <span class="mi">35</span><span class="p">],</span>
+    <span class="s1">&#39;amplitude&#39;</span><span class="p">:</span> <span class="p">[</span><span class="mi">5</span><span class="p">,</span> <span class="mi">15</span><span class="p">,</span> <span class="mi">10</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">7</span><span class="p">],</span>
+    <span class="s1">&#39;phase&#39;</span><span class="p">:</span> <span class="p">[</span><span class="mi">1</span><span class="o">/</span><span class="mi">7</span><span class="p">,</span> <span class="mi">1</span><span class="o">/</span><span class="mi">8</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="o">/</span><span class="mi">2</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="o">/</span><span class="mi">4</span><span class="p">],</span>
+<span class="p">})</span>
+<span class="n">model</span><span class="p">[</span><span class="s1">&#39;noise&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;magnitude&#39;</span><span class="p">:</span> <span class="mi">2</span><span class="p">,</span> <span class="s1">&#39;seed&#39;</span><span class="p">:</span> <span class="mi">12321</span><span class="p">}</span>
+<span class="n">model</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+<div class="jb_output_wrapper }}">
+<div class="output_area">
+
+
+
+<div class="output_text output_subarea output_execute_result">
+<pre>{&#39;components&#39;:    freq  amplitude     phase
+ 0     3          5  0.142857
+ 1    10         15  0.125000
+ 2     5         10  1.000000
+ 3    15          5  0.500000
+ 4    35          7 -0.250000, &#39;noise&#39;: {&#39;magnitude&#39;: 2, &#39;seed&#39;: 12321}}</pre>
+</div>
+
+</div>
+</div>
+</div>
+</div>
+
+</div>
+</div>
+
+<div class="jb_cell">
+
+<div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>We can write a function to generate a signal, taking in the model and sampling frequency as input arguments, like below.</p>
+
+</div>
+</div>
+</div>
+</div>
+
+<div class="jb_cell">
+
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="k">def</span> <span class="nf">generate_signal</span><span class="p">(</span><span class="n">model</span><span class="p">,</span> <span class="n">sampling_freq</span><span class="p">):</span>
+
+    <span class="n">time</span> <span class="o">=</span> <span class="n">arange</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span> <span class="o">+</span> <span class="mi">1</span><span class="o">/</span><span class="n">sampling_freq</span><span class="p">,</span> <span class="mi">1</span><span class="o">/</span><span class="n">sampling_freq</span><span class="p">)</span>
+
+    <span class="n">signals</span> <span class="o">=</span> <span class="p">[]</span>    
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">model</span><span class="p">[</span><span class="s1">&#39;components&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">index</span><span class="p">:</span>    
+        <span class="n">component_i</span> <span class="o">=</span> <span class="n">model</span><span class="p">[</span><span class="s1">&#39;components&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
+        <span class="n">amplitude</span> <span class="o">=</span> <span class="n">component_i</span><span class="p">[</span><span class="s1">&#39;amplitude&#39;</span><span class="p">]</span>
+        <span class="n">freq</span> <span class="o">=</span> <span class="n">component_i</span><span class="p">[</span><span class="s1">&#39;freq&#39;</span><span class="p">]</span>
+        <span class="n">phase</span> <span class="o">=</span> <span class="n">component_i</span><span class="p">[</span><span class="s1">&#39;phase&#39;</span><span class="p">]</span>
+        <span class="n">signal_i</span> <span class="o">=</span> <span class="n">amplitude</span> <span class="o">*</span> <span class="n">sin</span><span class="p">(</span><span class="mi">2</span><span class="o">*</span><span class="n">pi</span><span class="o">*</span><span class="n">freq</span><span class="o">*</span><span class="n">time</span> <span class="o">+</span> <span class="n">phase</span><span class="p">)</span>
+        
+        <span class="n">signals</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">signal_i</span><span class="p">)</span>
+    
+    <span class="n">signals</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">signals</span><span class="p">)</span>
+    
+    <span class="n">signal</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">signals</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+    
+    <span class="c1"># generate noise</span>
+    <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">seed</span><span class="p">(</span><span class="n">model</span><span class="p">[</span><span class="s1">&#39;noise&#39;</span><span class="p">][</span><span class="s1">&#39;seed&#39;</span><span class="p">])</span>
+    <span class="n">noise</span> <span class="o">=</span> <span class="n">model</span><span class="p">[</span><span class="s1">&#39;noise&#39;</span><span class="p">][</span><span class="s1">&#39;magnitude&#39;</span><span class="p">]</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">randn</span><span class="p">(</span><span class="n">signals</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
+    
+    <span class="c1"># add noise to signal</span>
+    <span class="n">signal</span> <span class="o">=</span> <span class="n">signal</span> <span class="o">+</span> <span class="n">noise</span>
+    
+    <span class="k">return</span> <span class="n">signal</span>
+
+
+<span class="k">def</span> <span class="nf">plot_signal</span><span class="p">(</span><span class="n">signal</span><span class="p">):</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">20</span><span class="p">,</span><span class="mi">3</span><span class="p">))</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">signal</span><span class="p">)</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+
+<span class="n">signal</span> <span class="o">=</span> <span class="n">generate_signal</span><span class="p">(</span><span class="n">model</span><span class="p">,</span> <span class="mi">500</span><span class="p">)</span>
+<span class="n">plot_signal</span><span class="p">(</span><span class="n">signal</span><span class="p">)</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+<div class="jb_output_wrapper }}">
+<div class="output_area">
+
+
+
+<div class="output_png output_subarea ">
+<img src="../../images/labs/lab-frequency-domain/index_6_0.png"
+>
+</div>
+
+</div>
+</div>
+</div>
+</div>
+
+</div>
+</div>
+
+<div class="jb_cell">
+
+<div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h2 id="Exercise">Exercise<a class="anchor-link" href="#Exercise"> </a></h2><p>Using DataFrame to represent the simulated signal gives us the ability to select a subset of components to generate a filtered version of the signal. We can enhance the function <code>generate_signal</code> by taking advantage of DataFrame's built-in selection capability. Implement the function <code>generate_signal_with_selector</code> below.</p>
+
+</div>
+</div>
+</div>
+</div>
+
+<div class="jb_cell">
+
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="k">def</span> <span class="nf">generate_signal_with_selector</span><span class="p">(</span><span class="n">model</span><span class="p">,</span> <span class="n">sampling_freq</span><span class="p">,</span> <span class="n">selector_func</span><span class="p">):</span>
+    
+    <span class="n">time</span> <span class="o">=</span> <span class="n">arange</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span> <span class="o">+</span> <span class="mi">1</span><span class="o">/</span><span class="n">sampling_freq</span><span class="p">,</span> <span class="mi">1</span><span class="o">/</span><span class="n">sampling_freq</span><span class="p">)</span>
+
+    <span class="n">selected_indices</span> <span class="o">=</span> <span class="n">selector_func</span><span class="p">(</span><span class="n">model</span><span class="p">[</span><span class="s1">&#39;components&#39;</span><span class="p">])</span>
+    <span class="n">selected_components</span> <span class="o">=</span> <span class="n">model</span><span class="p">[</span><span class="s1">&#39;components&#39;</span><span class="p">][</span><span class="n">selected_indices</span><span class="p">]</span>
+
+    <span class="c1">## BEGIN SOLUTION</span>
+    <span class="n">signals</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">selected_components</span><span class="o">.</span><span class="n">index</span><span class="p">:</span>        
+        <span class="n">component_i</span> <span class="o">=</span> <span class="n">selected_components</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
+
+        <span class="c1"># create a row of signal and append to signals</span>
+    
+
+    <span class="c1"># combine the signal</span>
+    <span class="n">signal</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">signals</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+    
+    <span class="c1"># generate noise</span>
+    
+    <span class="c1"># add noise to signal</span>
+              
+    <span class="k">return</span> <span class="n">signal</span>
+
+    <span class="c1">## END SOLUTION</span>
+
+    
+<span class="c1"># TEST 1</span>
+
+<span class="n">select_greater_than_10</span> <span class="o">=</span> <span class="k">lambda</span> <span class="n">df</span><span class="p">:</span> <span class="n">df</span><span class="p">[</span><span class="s1">&#39;freq&#39;</span><span class="p">]</span> <span class="o">&gt;</span> <span class="mi">10</span>
+<span class="n">signal</span> <span class="o">=</span> <span class="n">generate_signal_with_selector</span><span class="p">(</span><span class="n">model</span><span class="p">,</span> <span class="mi">500</span><span class="p">,</span> <span class="n">select_greater_than_10</span><span class="p">)</span>
+<span class="n">plot_signal</span><span class="p">(</span><span class="n">signal</span><span class="p">)</span>
+
+<span class="c1"># The plot should show the wave form composed of sine waves whose frequencies are greater than 10</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+<div class="jb_output_wrapper }}">
+<div class="output_area">
+
+
+
+<div class="output_png output_subarea ">
+<img src="../../images/labs/lab-frequency-domain/index_8_0.png"
+>
+</div>
+
+</div>
+</div>
+</div>
+</div>
+
+</div>
+</div>
+
+<div class="jb_cell">
+
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="c1"># TEST 2</span>
+
+<span class="n">select_less_than_20</span> <span class="o">=</span> <span class="k">lambda</span> <span class="n">df</span><span class="p">:</span> <span class="n">df</span><span class="p">[</span><span class="s1">&#39;freq&#39;</span><span class="p">]</span> <span class="o">&lt;</span> <span class="mi">20</span>
+<span class="n">signal</span> <span class="o">=</span> <span class="n">generate_signal_with_selector</span><span class="p">(</span><span class="n">model</span><span class="p">,</span> <span class="mi">500</span><span class="p">,</span> <span class="n">select_less_than_20</span><span class="p">)</span>
+<span class="n">plot_signal</span><span class="p">(</span><span class="n">signal</span><span class="p">)</span>
+
+<span class="c1"># The plot should show the wave form composed of sine waves whose frequencies are less than 20</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+<div class="jb_output_wrapper }}">
+<div class="output_area">
+
+
+
+<div class="output_png output_subarea ">
+<img src="../../images/labs/lab-frequency-domain/index_9_0.png"
+>
+</div>
+
+</div>
+</div>
+</div>
+</div>
+
+</div>
+</div>
+
+<div class="jb_cell">
+
+<div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h1 id="Frequency-Domain">Frequency Domain<a class="anchor-link" href="#Frequency-Domain"> </a></h1><p>In the previous example, we generated a complex signal composed of multiple sine waves oscillating at different frequencies. Typically in data analysis, we only observe the signal and are trying to uncover the generative processes that gave rise to the signal.  In this section, we will introduce the frequency domain and how we can identify if there are any frequencies oscillating at a consistent frequency in our signal using the fourier transform. The fourier transform is essentially convolving different frequencies of sine waves with our data.</p>
+<p>One important assumption to note is that the fourier transformations assume that your signals are stationary, which means that the generative processes giving rise to the oscillations do not vary over time. See this <a href="http://mikexcohen.com/lecturelets/fftstationarity/fftstationarity.html">video</a> for a more in depth discussion on stationarity.  In practice, this assumption is rarely true.  Often it can be useful to use other techniques such as wavelets to look at time x frequency representations. We will not be covering wavelets here, but see this series of <a href="http://mikexcohen.com/lecturelets/convolutiontime/convolutiontime.html">videos</a> for more information.</p>
+
+</div>
+</div>
+</div>
+</div>
+
+<div class="jb_cell">
+
+<div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h1 id="Discrete-Time-Fourier-Transform">Discrete Time Fourier Transform<a class="anchor-link" href="#Discrete-Time-Fourier-Transform"> </a></h1><p>We will gain an intution of how the fourier transform works by building our own discrete time fourier transform.  See this accompanying <a href="http://mikexcohen.com/lecturelets/fourier/fourier.html">video</a> for a more in depth overview.</p>
+<p>The discrete Fourier transform of variable $x$ at frequency $f$ is</p>
+<p>$X_f = \sum\limits_{k=0}^{n-1} x_k e^{-i2\pi f(k-1)n^{-1}}$
+ where $n$ refers to the number of data points in vector $x$, and the capital letter $X_f$ is the fourier coefficient of time series variable $x$ at frequency $f$.</p>
+<p>Essentially, we create a bank of sine waves at different frequencies that are linearly spaced. We will compute n-1 sine waves as the zero frequency component will be the mean offset over the entire signal and will simply be zero in our example.</p>
+<p>Notice that we are computing <em>complex</em> sine waves using the <code>np.exp</code> function instead of the <code>np.sin</code> function. <code>1j</code> is how we can specify a complex number in python.  We can extract the real components using <code>np.real</code> or the imaginary using <code>np.imag</code>. See this <a href="http://mikexcohen.com/lecturelets/complexfourier/complexfourier.html">video</a> for more information about complex numbers.</p>
+<p>Now let's create a bank of n-1 linearly spaced complex sine waves.</p>
+
+</div>
+</div>
+</div>
+</div>
+
+<div class="jb_cell">
+
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">from</span> <span class="nn">numpy</span> <span class="k">import</span> <span class="n">exp</span>
+
+<span class="n">sampling_freq</span> <span class="o">=</span> <span class="mi">500</span>
+<span class="n">n</span> <span class="o">=</span> <span class="n">sampling_freq</span> <span class="o">*</span> <span class="mi">2</span> <span class="o">+</span> <span class="mi">1</span>
+
+<span class="n">time</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">n</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span> <span class="o">/</span> <span class="n">n</span>
+
+<span class="n">sine_waves</span> <span class="o">=</span> <span class="p">[]</span>
+<span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">n</span><span class="p">):</span>
+    <span class="n">sine_waves</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">exp</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="n">j</span><span class="o">*</span><span class="mi">2</span><span class="o">*</span><span class="n">pi</span><span class="o">*</span><span class="n">i</span><span class="o">*</span><span class="n">time</span><span class="p">))</span>
+<span class="n">sine_waves</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">sine_waves</span><span class="p">)</span>
+<span class="n">sine_waves</span><span class="o">.</span><span class="n">shape</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+<div class="jb_output_wrapper }}">
+<div class="output_area">
+
+
+
+<div class="output_text output_subarea output_execute_result">
+<pre>(1001, 1001)</pre>
+</div>
+
+</div>
+</div>
+</div>
+</div>
+
+</div>
+</div>
+
+<div class="jb_cell">
+
+<div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>Let's look at the first 5 waves to see their frequencies. Remember the first basis function is zero frequency component and reflects the mean offset over the entire signal.</p>
+
+</div>
+</div>
+</div>
+</div>
+
+<div class="jb_cell">
+
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">f</span><span class="p">,</span><span class="n">a</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="n">nrows</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span> <span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">10</span><span class="p">,</span><span class="mi">5</span><span class="p">),</span> <span class="n">sharex</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="mi">5</span><span class="p">):</span>
+    <span class="n">a</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">sine_waves</span><span class="p">[</span><span class="n">i</span><span class="p">,:])</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="s1">&#39;Time&#39;</span><span class="p">,</span> <span class="n">fontsize</span><span class="o">=</span><span class="mi">18</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">tight_layout</span><span class="p">()</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+<div class="jb_output_wrapper }}">
+<div class="output_area">
+
+<div class="output_subarea output_stream output_stderr output_text">
+<pre>/Users/tom/opt/anaconda3/lib/python3.7/site-packages/numpy/core/_asarray.py:85: ComplexWarning: Casting complex values to real discards the imaginary part
+  return array(a, dtype, copy=False, order=order)
+</pre>
+</div>
+</div>
+</div>
+<div class="jb_output_wrapper }}">
+<div class="output_area">
+
+
+
+<div class="output_png output_subarea ">
+<img src="../../images/labs/lab-frequency-domain/index_14_1.png"
+>
+</div>
+
+</div>
+</div>
+</div>
+</div>
+
+</div>
+</div>
+
+<div class="jb_cell">
+
+<div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>We can visualize all of the sine waves simultaneously using a heatmap representation.  Each row is a different sine wave, and columns reflect time.  The intensity of the value is like if the sine wave was coming towards and away rather than up and down. Notice how it looks like that the second half of the sine waves appear to be a mirror image of the first half.  This is because the first half contain the <em>positive</em> frequencies, while the second half contains the <em>negative</em> frequencies.  Negative frequencies capture sine waves that travel in reverse order around the complex plane compared to that travel forward. This becomes more relevant with the hilbert transform, but for the purposes of this tutorial we will be ignoring the negative frequencies.</p>
+
+</div>
+</div>
+</div>
+</div>
+
+<div class="jb_cell">
+
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">(</span><span class="n">figsize</span> <span class="o">=</span> <span class="p">(</span><span class="mi">15</span><span class="p">,</span><span class="mi">15</span><span class="p">))</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">imshow</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">real</span><span class="p">(</span><span class="n">sine_waves</span><span class="p">))</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">ylabel</span><span class="p">(</span><span class="s1">&#39;Frequency&#39;</span><span class="p">,</span> <span class="n">fontsize</span><span class="o">=</span><span class="mi">18</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="s1">&#39;Time&#39;</span><span class="p">,</span> <span class="n">fontsize</span><span class="o">=</span><span class="mi">18</span><span class="p">)</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+<div class="jb_output_wrapper }}">
+<div class="output_area">
+
+
+
+<div class="output_text output_subarea output_execute_result">
+<pre>Text(0.5, 0, &#39;Time&#39;)</pre>
+</div>
+
+</div>
+</div>
+<div class="jb_output_wrapper }}">
+<div class="output_area">
+
+
+
+<div class="output_png output_subarea ">
+<img src="../../images/labs/lab-frequency-domain/index_16_1.png"
+>
+</div>
+
+</div>
+</div>
+</div>
+</div>
+
+</div>
+</div>
+
+<div class="jb_cell">
+
+<div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>Now let's take the dot product of each of the sine wave basis set with our signal</p>
+
+</div>
+</div>
+</div>
+</div>
+
+<div class="jb_cell">
+
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">signal</span> <span class="o">=</span> <span class="n">generate_signal</span><span class="p">(</span><span class="n">model</span><span class="p">,</span> <span class="mi">500</span><span class="p">)</span>
+<span class="n">fourier</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">signal</span><span class="p">,</span> <span class="n">sine_waves</span><span class="p">)</span>
+<span class="n">fourier</span><span class="o">.</span><span class="n">shape</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+<div class="jb_output_wrapper }}">
+<div class="output_area">
+
+
+
+<div class="output_text output_subarea output_execute_result">
+<pre>(1001,)</pre>
+</div>
+
+</div>
+</div>
+</div>
+</div>
+
+</div>
+</div>
+
+<div class="jb_cell">
+
+<div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>Now that we have computed the fourier transform, we might want to examine the results.  The fourier transform provides a 3-D representation of the data including frquency, power, and phase. Typically, the phase information is ignored when plotting the results of a fourier analysis. The traditional way to view the information is plot the data as amplitude on the <em>y-axis</em> and frequency on the <em>x-axis</em>. We will extract amplitude by taking the absolute value of the fourier coefficients. Remember that we are only focusing on the positive frequencies (the 1st half of the sine wave basis functions).</p>
+<p>Here the x axis simply reflects the index of the frequency.  The actual frequency is $N/2 + 1$ as we are only able estimate frequencies that are half the sampling frequency, this is called the Nyquist frequency. Watch this <a href="http://mikexcohen.com/lecturelets/frequencies/frequencies.html">video</a> to hear more about frequencies and zero padding.</p>
+
+</div>
+</div>
+</div>
+</div>
+
+<div class="jb_cell">
+
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">20</span><span class="p">,</span><span class="mi">5</span><span class="p">))</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">fourier</span><span class="p">[</span><span class="mi">0</span><span class="p">:</span><span class="nb">int</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">ceil</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">fourier</span><span class="p">)</span><span class="o">/</span><span class="mi">2</span><span class="p">))]))</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="s1">&#39;Frequency (index)&#39;</span><span class="p">,</span> <span class="n">fontsize</span><span class="o">=</span><span class="mi">18</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">ylabel</span><span class="p">(</span><span class="s1">&#39;Amplitude&#39;</span><span class="p">,</span> <span class="n">fontsize</span><span class="o">=</span><span class="mi">18</span><span class="p">)</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+<div class="jb_output_wrapper }}">
+<div class="output_area">
+
+
+
+<div class="output_text output_subarea output_execute_result">
+<pre>Text(0, 0.5, &#39;Amplitude&#39;)</pre>
+</div>
+
+</div>
+</div>
+<div class="jb_output_wrapper }}">
+<div class="output_area">
+
+
+
+<div class="output_png output_subarea ">
+<img src="../../images/labs/lab-frequency-domain/index_20_1.png"
+>
+</div>
+
+</div>
+</div>
+</div>
+</div>
+
+</div>
+</div>
+
+<div class="jb_cell">
+
+<div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>Notice that there are 5 different frequencies that have varying amplitudes. Recall that when we simulated this data we added 5 different sine waves with different frequencies and amplitudes.</p>
+<p><code>freq = [3, 10, 5 ,15, 35]</code>
+<code>amplitude = [5, 15, 10, 5, 7]</code></p>
+<p>Let's zoom in a bit more to see this more clearly and also add the correct frequency labels in $Hz$.</p>
+
+</div>
+</div>
+</div>
+</div>
+
+<div class="jb_cell">
+
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">20</span><span class="p">,</span><span class="mi">5</span><span class="p">))</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">80</span><span class="p">)</span><span class="o">/</span><span class="mi">2</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">fourier</span><span class="p">)[</span><span class="mi">0</span><span class="p">:</span><span class="mi">80</span><span class="p">])</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="s1">&#39;Frequency (Hz)&#39;</span><span class="p">,</span> <span class="n">fontsize</span><span class="o">=</span><span class="mi">18</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">ylabel</span><span class="p">(</span><span class="s1">&#39;Amplitude&#39;</span><span class="p">,</span> <span class="n">fontsize</span><span class="o">=</span><span class="mi">18</span><span class="p">)</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+<div class="jb_output_wrapper }}">
+<div class="output_area">
+
+
+
+<div class="output_text output_subarea output_execute_result">
+<pre>Text(0, 0.5, &#39;Amplitude&#39;)</pre>
+</div>
+
+</div>
+</div>
+<div class="jb_output_wrapper }}">
+<div class="output_area">
+
+
+
+<div class="output_png output_subarea ">
+<img src="../../images/labs/lab-frequency-domain/index_22_1.png"
+>
+</div>
+
+</div>
+</div>
+</div>
+</div>
+
+</div>
+</div>
+
+<div class="jb_cell">
+
+<div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h2 id="Exercise">Exercise<a class="anchor-link" href="#Exercise"> </a></h2><p>The plot above shows five spikes corresponding to the five frequencies used to generate the simulated signal. Now, repeat the code above to compute the fourier (i.e., by taking a doct product) of a "filtered" version of the simulated signal generated using your implementation of <code>generate_signal_with_selector</code>. Create a similar plot like above except only a selected subset of the spikes should be seen.</p>
+
+</div>
+</div>
+</div>
+</div>
+
+<div class="jb_cell">
+
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">select_less_than_20</span> <span class="o">=</span> <span class="k">lambda</span> <span class="n">df</span><span class="p">:</span> <span class="n">df</span><span class="p">[</span><span class="s1">&#39;freq&#39;</span><span class="p">]</span> <span class="o">&lt;</span> <span class="mi">20</span>
+<span class="n">a_filtered_signal</span> <span class="o">=</span> <span class="n">generate_signal_with_selector</span><span class="p">(</span><span class="n">model</span><span class="p">,</span> <span class="mi">500</span><span class="p">,</span> <span class="n">select_less_than_20</span><span class="p">)</span>
+
+<span class="c1">### BEGIN SOLUTION</span>
+
+<span class="n">signal</span> <span class="o">=</span> <span class="n">a_filtered_signal</span><span class="c1">#generate_signal(model, 500)</span>
+<span class="n">fourier</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">signal</span><span class="p">,</span> <span class="n">sine_waves</span><span class="p">)</span>
+<span class="n">fourier</span><span class="o">.</span><span class="n">shape</span>
+
+<span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">20</span><span class="p">,</span><span class="mi">5</span><span class="p">))</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">80</span><span class="p">)</span><span class="o">/</span><span class="mi">2</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">fourier</span><span class="p">)[</span><span class="mi">0</span><span class="p">:</span><span class="mi">80</span><span class="p">])</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="s1">&#39;Frequency (Hz)&#39;</span><span class="p">,</span> <span class="n">fontsize</span><span class="o">=</span><span class="mi">18</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">ylabel</span><span class="p">(</span><span class="s1">&#39;Amplitude&#39;</span><span class="p">,</span> <span class="n">fontsize</span><span class="o">=</span><span class="mi">18</span><span class="p">)</span>
+<span class="c1">### END SOLUTION</span>
+
+<span class="c1"># Expected: A plot that looks like above except there is no spike at Frequency = 35 </span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+<div class="jb_output_wrapper }}">
+<div class="output_area">
+
+
+
+<div class="output_text output_subarea output_execute_result">
+<pre>Text(0, 0.5, &#39;Amplitude&#39;)</pre>
+</div>
+
+</div>
+</div>
+<div class="jb_output_wrapper }}">
+<div class="output_area">
+
+
+
+<div class="output_png output_subarea ">
+<img src="../../images/labs/lab-frequency-domain/index_24_1.png"
+>
+</div>
+
+</div>
+</div>
+</div>
+</div>
+
+</div>
+</div>
+
+<div class="jb_cell">
+
+<div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h1 id="Inverse-Fourier-Transform">Inverse Fourier Transform<a class="anchor-link" href="#Inverse-Fourier-Transform"> </a></h1><p>The fourier transform allows you to represent a time series in the frequency domain. We can also invert this transformation and create a time series with only the frequency domain information using the <em>inverse fourier transform</em>.</p>
+<p>$x_k = \sum\limits_{k=0}^{n-1} X_k e^{i2\pi f(k-1)n^{-1}}$</p>
+<p>Notice that we are computing the dot product between the complex sine wave and the fourier coefficients $X$ instead of the time series data $x$.</p>
+
+</div>
+</div>
+</div>
+</div>
+
+<div class="jb_cell">
+
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">sampling_freq</span> <span class="o">=</span> <span class="mi">500</span>
+<span class="n">signal</span> <span class="o">=</span> <span class="n">generate_signal</span><span class="p">(</span><span class="n">model</span><span class="p">,</span> <span class="mi">500</span><span class="p">)</span>
+
+<span class="c1"># plot the simulated signal </span>
+<span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">20</span><span class="p">,</span><span class="mi">5</span><span class="p">))</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">signal</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">ylabel</span><span class="p">(</span><span class="s1">&#39;Intensity&#39;</span><span class="p">,</span> <span class="n">fontsize</span><span class="o">=</span><span class="mi">18</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="s1">&#39;Time&#39;</span><span class="p">,</span> <span class="n">fontsize</span><span class="o">=</span><span class="mi">18</span><span class="p">)</span>
+
+
+<span class="n">n</span> <span class="o">=</span> <span class="n">sampling_freq</span> <span class="o">*</span> <span class="mi">2</span> <span class="o">+</span> <span class="mi">1</span>
+<span class="n">time</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">n</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span> <span class="o">/</span> <span class="n">n</span>
+
+<span class="n">sine_waves</span> <span class="o">=</span> <span class="p">[]</span>
+<span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">n</span><span class="p">):</span>
+    <span class="n">sine_waves</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">exp</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="n">j</span><span class="o">*</span><span class="mi">2</span><span class="o">*</span><span class="n">pi</span><span class="o">*</span><span class="n">i</span><span class="o">*</span><span class="n">time</span><span class="p">))</span>
+<span class="n">sine_waves</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">sine_waves</span><span class="p">)</span>
+
+<span class="c1"># fourier transform</span>
+<span class="n">fourier</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">signal</span><span class="p">,</span> <span class="n">sine_waves</span><span class="p">)</span>
+
+<span class="c1"># inverse fourier transform</span>
+<span class="n">inv_fourier</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">fourier</span><span class="p">,</span> <span class="n">sine_waves</span><span class="p">)</span>
+
+<span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">20</span><span class="p">,</span><span class="mi">5</span><span class="p">))</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">inv_fourier</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">ylabel</span><span class="p">(</span><span class="s1">&#39;Intensity&#39;</span><span class="p">,</span> <span class="n">fontsize</span><span class="o">=</span><span class="mi">18</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="s1">&#39;Time&#39;</span><span class="p">,</span> <span class="n">fontsize</span><span class="o">=</span><span class="mi">18</span><span class="p">)</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+<div class="jb_output_wrapper }}">
+<div class="output_area">
+
+
+
+<div class="output_text output_subarea output_execute_result">
+<pre>Text(0.5, 0, &#39;Time&#39;)</pre>
+</div>
+
+</div>
+</div>
+<div class="jb_output_wrapper }}">
+<div class="output_area">
+
+
+
+<div class="output_png output_subarea ">
+<img src="../../images/labs/lab-frequency-domain/index_26_1.png"
+>
+</div>
+
+</div>
+</div>
+<div class="jb_output_wrapper }}">
+<div class="output_area">
+
+
+
+<div class="output_png output_subarea ">
+<img src="../../images/labs/lab-frequency-domain/index_26_2.png"
+>
+</div>
+
+</div>
+</div>
+</div>
+</div>
+
+</div>
+</div>
+
+<div class="jb_cell">
+
+<div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h2 id="Exercise">Exercise<a class="anchor-link" href="#Exercise"> </a></h2><p>What do you notice when you look at the two wave forms?</p>
+
+</div>
+</div>
+</div>
+</div>
+
+<div class="jb_cell">
+
+<div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h1 id="Fast-Fourier-Transform">Fast Fourier Transform<a class="anchor-link" href="#Fast-Fourier-Transform"> </a></h1><p>The discrete time fourier transform is useful to understand the relationship between the time and frequency domains. However, in practice this method is rarely used as there are more faster and efficient methods to perform this computation. One popular algorithm is called the fast fourier transform (FFT). This function is also in numpy <code>np.fft.fft</code>.</p>
+
+</div>
+</div>
+</div>
+</div>
+
+<div class="jb_cell">
+
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="kn">from</span> <span class="nn">numpy.fft</span> <span class="k">import</span> <span class="n">fft</span><span class="p">,</span> <span class="n">ifft</span>
+
+<span class="c1"># generate a signal</span>
+<span class="n">signal</span> <span class="o">=</span> <span class="n">generate_signal</span><span class="p">(</span><span class="n">model</span><span class="p">,</span> <span class="mi">500</span><span class="p">)</span>
+
+<span class="c1"># compute fast fourier transformation</span>
+<span class="n">fourier_fft</span> <span class="o">=</span> <span class="n">fft</span><span class="p">(</span><span class="n">signal</span><span class="p">)</span>
+
+<span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">20</span><span class="p">,</span><span class="mi">5</span><span class="p">))</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">((</span><span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="mi">80</span><span class="p">)</span><span class="o">/</span><span class="mi">2</span><span class="p">),</span> <span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">fourier_fft</span><span class="p">[</span><span class="mi">0</span><span class="p">:</span><span class="mi">80</span><span class="p">]))</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">ylabel</span><span class="p">(</span><span class="s1">&#39;Amplitude&#39;</span><span class="p">,</span> <span class="n">fontsize</span><span class="o">=</span><span class="mi">18</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="s1">&#39;Frequency (Hz)&#39;</span><span class="p">,</span> <span class="n">fontsize</span><span class="o">=</span><span class="mi">18</span><span class="p">)</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+<div class="jb_output_wrapper }}">
+<div class="output_area">
+
+
+
+<div class="output_text output_subarea output_execute_result">
+<pre>Text(0.5, 0, &#39;Frequency (Hz)&#39;)</pre>
+</div>
+
+</div>
+</div>
+<div class="jb_output_wrapper }}">
+<div class="output_area">
+
+
+
+<div class="output_png output_subarea ">
+<img src="../../images/labs/lab-frequency-domain/index_29_1.png"
+>
+</div>
+
+</div>
+</div>
+</div>
+</div>
+
+</div>
+</div>
+
+<div class="jb_cell">
+
+<div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>Let's generate a new signal using the same model by selecting only those whose freq is less or equal to 10. Using fft, the result now shows three spies</p>
+
+</div>
+</div>
+</div>
+</div>
+
+<div class="jb_cell">
+
+<div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>We can also use the <code>ifft</code> to perform an inverse fourier transform</p>
+
+</div>
+</div>
+</div>
+</div>
+
+<div class="jb_cell">
+
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">20</span><span class="p">,</span><span class="mi">5</span><span class="p">))</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">ifft</span><span class="p">(</span><span class="n">fourier</span><span class="p">))</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">ylabel</span><span class="p">(</span><span class="s1">&#39;Intensity&#39;</span><span class="p">,</span> <span class="n">fontsize</span><span class="o">=</span><span class="mi">18</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="s1">&#39;Time&#39;</span><span class="p">,</span> <span class="n">fontsize</span><span class="o">=</span><span class="mi">18</span><span class="p">)</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+<div class="jb_output_wrapper }}">
+<div class="output_area">
+
+<div class="output_subarea output_stream output_stderr output_text">
+<pre>/Users/tom/opt/anaconda3/lib/python3.7/site-packages/numpy/core/_asarray.py:85: ComplexWarning: Casting complex values to real discards the imaginary part
+  return array(a, dtype, copy=False, order=order)
+</pre>
+</div>
+</div>
+</div>
+<div class="jb_output_wrapper }}">
+<div class="output_area">
+
+
+
+<div class="output_text output_subarea output_execute_result">
+<pre>Text(0.5, 0, &#39;Time&#39;)</pre>
+</div>
+
+</div>
+</div>
+<div class="jb_output_wrapper }}">
+<div class="output_area">
+
+
+
+<div class="output_png output_subarea ">
+<img src="../../images/labs/lab-frequency-domain/index_32_2.png"
+>
+</div>
+
+</div>
+</div>
+</div>
+</div>
+
+</div>
+</div>
+
+<div class="jb_cell">
+
+<div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h2 id="Exercise">Exercise<a class="anchor-link" href="#Exercise"> </a></h2><p>Practice using <code>fft</code> and <code>ifft</code> on a filtered signal generated using your implementation of <code>generate_signal_with_selector</code>.</p>
+
+</div>
+</div>
+</div>
+</div>
+
+<div class="jb_cell">
+
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">select_less_than_20</span> <span class="o">=</span> <span class="k">lambda</span> <span class="n">df</span><span class="p">:</span> <span class="n">df</span><span class="p">[</span><span class="s1">&#39;freq&#39;</span><span class="p">]</span> <span class="o">&lt;</span> <span class="mi">20</span>
+<span class="n">a_filtered_signal</span> <span class="o">=</span> <span class="n">generate_signal_with_selector</span><span class="p">(</span><span class="n">model</span><span class="p">,</span> <span class="mi">500</span><span class="p">,</span> <span class="n">select_less_than_20</span><span class="p">)</span>
+
+<span class="c1"># compute and plot the fourier of `a_filtered_signal`</span>
+
+<span class="c1"># plot the ifft of the fourier of `a_filtered_signal`</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+</div>
+</div>
+
+<div class="jb_cell">
+
+<div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h1 id="Convolution-Theorem">Convolution Theorem<a class="anchor-link" href="#Convolution-Theorem"> </a></h1><p>Convolution in the time domain is the same multiplication in the frequency domain. This means that time domain convolution computations can be performed much more efficiently in the frequency domain via simple multiplication. (The opposite is also true that multiplication in the time domain is the same as convolution in the frequency domain. Watch this <a href="http://mikexcohen.com/lecturelets/convolutiontime/convolutiontime.html">video</a> for an overview of the convolution theorem and convolution in the frequency domain.</p>
+
+</div>
+</div>
+</div>
+</div>
+
+<div class="jb_cell">
+
+<div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h1 id="Filters">Filters<a class="anchor-link" href="#Filters"> </a></h1><p>Filters can be classified as finite impulse response (FIR) or infinite impulse response (IIR). These terms describe how a filter responds to a single input impulse.  FIR filters have a response that ends at a disrete point in time, while IIR filters have a response that continues indefinitely.</p>
+<p>Filters are constructed in the frequency domain and several properties that need to be considers.</p>
+<ul>
+<li>ripple in the pass-band</li>
+<li>attenuation in the stop-band</li>
+<li>steepness of roll-off</li>
+<li>filter order (i.e., length for FIR filters)</li>
+<li>time-domain ringing</li>
+</ul>
+<p>In general, there is a frequency by time tradeoff.  The sharper something is in frequency, the broader it is in time, and vice versa.</p>
+<p>Here we will use IIR butterworth filters as an example.</p>
+
+</div>
+</div>
+</div>
+</div>
+
+<div class="jb_cell">
+
+<div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h1 id="High-Pass">High Pass<a class="anchor-link" href="#High-Pass"> </a></h1><p>High pass filters only allow high frequency signals to remain, effectively <em>removing</em> any low frequency information.</p>
+<p>Here we will construct a high pass butterworth filter and plot it in frequency space.</p>
+<p><strong>Note</strong>: this example requires using scipy 1.2.1+. To upgrade run <code>!pip install scipy --upgrae</code> and then reset your kernel.</p>
+
+</div>
+</div>
+</div>
+</div>
+
+<div class="jb_cell">
+
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="kn">from</span> <span class="nn">scipy.signal</span> <span class="k">import</span> <span class="n">butter</span><span class="p">,</span> <span class="n">filtfilt</span><span class="p">,</span> <span class="n">freqz</span>
+
+<span class="n">filter_order</span> <span class="o">=</span> <span class="mi">3</span>
+<span class="n">frequency_cutoff</span> <span class="o">=</span> <span class="mi">25</span>
+<span class="n">sampling_frequency</span> <span class="o">=</span> <span class="mi">500</span>
+
+<span class="c1"># Create the filter</span>
+<span class="n">b</span><span class="p">,</span> <span class="n">a</span> <span class="o">=</span> <span class="n">butter</span><span class="p">(</span><span class="n">filter_order</span><span class="p">,</span> <span class="n">frequency_cutoff</span><span class="p">,</span> <span class="n">btype</span><span class="o">=</span><span class="s1">&#39;high&#39;</span><span class="p">,</span> <span class="n">output</span><span class="o">=</span><span class="s1">&#39;ba&#39;</span><span class="p">,</span> <span class="n">fs</span><span class="o">=</span><span class="n">sampling_frequency</span><span class="p">)</span>
+
+<span class="k">def</span> <span class="nf">rad_sample_to_hz</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">fs</span><span class="p">):</span>
+    <span class="k">return</span> <span class="p">(</span><span class="n">x</span><span class="o">*</span><span class="n">fs</span><span class="p">)</span><span class="o">/</span><span class="p">(</span><span class="mi">2</span><span class="o">*</span><span class="n">np</span><span class="o">.</span><span class="n">pi</span><span class="p">)</span>
+
+<span class="k">def</span> <span class="nf">plot_filter</span><span class="p">(</span><span class="n">b</span><span class="p">,</span> <span class="n">a</span><span class="p">,</span> <span class="n">fs</span><span class="p">):</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">20</span><span class="p">,</span><span class="mi">5</span><span class="p">))</span>
+    <span class="n">w</span><span class="p">,</span> <span class="n">h</span> <span class="o">=</span> <span class="n">freqz</span><span class="p">(</span><span class="n">b</span><span class="p">,</span> <span class="n">a</span><span class="p">,</span> <span class="n">worN</span><span class="o">=</span><span class="mi">512</span><span class="o">*</span><span class="mi">2</span><span class="p">,</span> <span class="n">whole</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">rad_sample_to_hz</span><span class="p">(</span><span class="n">w</span><span class="p">,</span> <span class="n">fs</span><span class="p">),</span> <span class="nb">abs</span><span class="p">(</span><span class="n">h</span><span class="p">),</span> <span class="n">linewidth</span><span class="o">=</span><span class="mi">3</span><span class="p">)</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">ylabel</span><span class="p">(</span><span class="s1">&#39;Gain&#39;</span><span class="p">,</span> <span class="n">fontsize</span><span class="o">=</span><span class="mi">18</span><span class="p">)</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="s1">&#39;Frequency&#39;</span><span class="p">,</span> <span class="n">fontsize</span><span class="o">=</span><span class="mi">18</span><span class="p">)</span>
+    
+<span class="n">plot_filter</span><span class="p">(</span><span class="n">b</span><span class="p">,</span> <span class="n">a</span><span class="p">,</span> <span class="n">sampling_frequency</span><span class="p">)</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+<div class="jb_output_wrapper }}">
+<div class="output_area">
+
+
+
+<div class="output_png output_subarea ">
+<img src="../../images/labs/lab-frequency-domain/index_38_0.png"
+>
+</div>
+
+</div>
+</div>
+</div>
+</div>
+
+</div>
+</div>
+
+<div class="jb_cell">
+
+<div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>Notice how the gain scales from [0,1]?  Filters can be multiplied by the FFT of a signal to apply the filter in the frequency domain. When the resulting signal is transformed back in the time domain using the inverse FFT, the new signal will be filtered. This can be much faster than applying filters in the time domain.</p>
+<p>The filter_order parameter adjusts the sharpness of the cutoff in the frequency domain.  Try playing with different values to see how it changes the filter plot.</p>
+
+</div>
+</div>
+</div>
+</div>
+
+<div class="jb_cell">
+
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="nd">@interact_manual</span><span class="p">(</span><span class="n">frequency_cutoff</span> <span class="o">=</span> <span class="mi">50</span><span class="p">,</span> <span class="n">sampling_frequency</span> <span class="o">=</span> <span class="mi">500</span><span class="p">)</span>
+<span class="k">def</span> <span class="nf">test_butter_filter</span><span class="p">(</span><span class="n">frequency_cutoff</span><span class="p">,</span> <span class="n">sampling_frequency</span><span class="p">):</span>
+    <span class="n">b</span><span class="p">,</span> <span class="n">a</span> <span class="o">=</span> <span class="n">butter</span><span class="p">(</span><span class="n">filter_order</span><span class="p">,</span> <span class="n">frequency_cutoff</span><span class="p">,</span> <span class="n">btype</span><span class="o">=</span><span class="s1">&#39;high&#39;</span><span class="p">,</span> <span class="n">output</span><span class="o">=</span><span class="s1">&#39;ba&#39;</span><span class="p">,</span> <span class="n">fs</span><span class="o">=</span><span class="n">sampling_frequency</span><span class="p">)</span>
+    <span class="n">plot_filter</span><span class="p">(</span><span class="n">b</span><span class="p">,</span> <span class="n">a</span><span class="p">,</span> <span class="n">sampling_frequency</span><span class="p">)</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+<div class="jb_output_wrapper }}">
+<div class="output_area">
+
+
+
+
+ 
+ 
+<div id="6175e14d-84f7-4900-8feb-61292387aef3"></div>
+<div class="output_subarea output_widget_view ">
+<script type="text/javascript">
+var element = $('#6175e14d-84f7-4900-8feb-61292387aef3');
+</script>
+<script type="application/vnd.jupyter.widget-view+json">
+{"model_id": "8202f8e9af5945afba62e0ab874e278f", "version_major": 2, "version_minor": 0}
+</script>
+</div>
+
+</div>
+</div>
+</div>
+</div>
+
+</div>
+</div>
+
+<div class="jb_cell">
+
+<div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>What does the filter look like in the temporal domain?  Let's take the inverse FFT and plot it to see what it looks like as a kernel in the temporal domain.  Notice how changing the filter order adds more ripples in the time domain.</p>
+
+</div>
+</div>
+</div>
+</div>
+
+<div class="jb_cell">
+
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="kn">from</span> <span class="nn">scipy.signal</span> <span class="k">import</span> <span class="n">sosfreqz</span>
+
+<span class="n">filter_order</span> <span class="o">=</span> <span class="mi">8</span>
+<span class="n">sos</span> <span class="o">=</span> <span class="n">butter</span><span class="p">(</span><span class="n">filter_order</span><span class="p">,</span> <span class="n">frequency_cutoff</span><span class="p">,</span> <span class="n">btype</span><span class="o">=</span><span class="s1">&#39;high&#39;</span><span class="p">,</span> <span class="n">output</span><span class="o">=</span><span class="s1">&#39;sos&#39;</span><span class="p">,</span> <span class="n">fs</span><span class="o">=</span><span class="n">sampling_frequency</span><span class="p">)</span>    
+<span class="n">w_sos</span><span class="p">,</span> <span class="n">h_sos</span> <span class="o">=</span> <span class="n">sosfreqz</span><span class="p">(</span><span class="n">sos</span><span class="p">)</span>
+
+<span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">ifft</span><span class="p">(</span><span class="n">h_sos</span><span class="p">)[</span><span class="mi">0</span><span class="p">:</span><span class="mi">100</span><span class="p">],</span> <span class="n">linewidth</span><span class="o">=</span><span class="mi">3</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">ylabel</span><span class="p">(</span><span class="s1">&#39;Amplitude&#39;</span><span class="p">,</span> <span class="n">fontsize</span><span class="o">=</span><span class="mi">18</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="s1">&#39;Time&#39;</span><span class="p">,</span> <span class="n">fontsize</span><span class="o">=</span><span class="mi">18</span><span class="p">)</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+<div class="jb_output_wrapper }}">
+<div class="output_area">
+
+
+
+<div class="output_text output_subarea output_execute_result">
+<pre>Text(0.5, 0, &#39;Time&#39;)</pre>
+</div>
+
+</div>
+</div>
+<div class="jb_output_wrapper }}">
+<div class="output_area">
+
+
+
+<div class="output_png output_subarea ">
+<img src="../../images/labs/lab-frequency-domain/index_42_1.png"
+>
+</div>
+
+</div>
+</div>
+</div>
+</div>
+
+</div>
+</div>
+
+<div class="jb_cell">
+
+<div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>Now let's apply the filter to our data. We will be applying the filter to the signal in the time domain using the <code>filtfilt</code> function. This is a good default option, even though there are several other functions to apply the filter. <code>filtfilt</code> applies the filter forward and then in reverse ensuring that there is zero-phase distortion.</p>
+
+</div>
+</div>
+</div>
+</div>
+
+<div class="jb_cell">
+
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">filter_order</span> <span class="o">=</span> <span class="mi">8</span>
+<span class="n">frequency_cutoff</span> <span class="o">=</span> <span class="mi">25</span>
+<span class="n">sampling_frequency</span> <span class="o">=</span> <span class="mi">500</span>
+
+<span class="n">b</span><span class="p">,</span> <span class="n">a</span> <span class="o">=</span> <span class="n">butter</span><span class="p">(</span><span class="n">filter_order</span><span class="p">,</span> <span class="n">frequency_cutoff</span><span class="p">,</span> <span class="n">btype</span><span class="o">=</span><span class="s1">&#39;high&#39;</span><span class="p">,</span> <span class="n">output</span><span class="o">=</span><span class="s1">&#39;ba&#39;</span><span class="p">,</span> <span class="n">fs</span><span class="o">=</span><span class="n">sampling_frequency</span><span class="p">)</span>    
+
+<span class="n">signal</span> <span class="o">=</span> <span class="n">generate_signal</span><span class="p">(</span><span class="n">model</span><span class="p">,</span> <span class="mi">500</span><span class="p">)</span>
+
+<span class="n">filtered</span> <span class="o">=</span> <span class="n">filtfilt</span><span class="p">(</span><span class="n">b</span><span class="p">,</span> <span class="n">a</span><span class="p">,</span> <span class="n">signal</span><span class="p">)</span>
+
+<span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">20</span><span class="p">,</span><span class="mi">5</span><span class="p">))</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">signal</span><span class="p">[</span><span class="mi">0</span><span class="p">:</span><span class="mi">200</span><span class="p">],</span> <span class="n">linewidth</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">filtered</span><span class="p">[</span><span class="mi">0</span><span class="p">:</span><span class="mi">200</span><span class="p">],</span> <span class="n">linewidth</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">ylabel</span><span class="p">(</span><span class="s1">&#39;Intensity&#39;</span><span class="p">,</span> <span class="n">fontsize</span><span class="o">=</span><span class="mi">18</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="s1">&#39;Time&#39;</span><span class="p">,</span> <span class="n">fontsize</span><span class="o">=</span><span class="mi">18</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">legend</span><span class="p">([</span><span class="s1">&#39;Original&#39;</span><span class="p">,</span><span class="s1">&#39;Filtered&#39;</span><span class="p">],</span> <span class="n">fontsize</span><span class="o">=</span><span class="mi">18</span><span class="p">)</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+<div class="jb_output_wrapper }}">
+<div class="output_area">
+
+
+
+<div class="output_text output_subarea output_execute_result">
+<pre>&lt;matplotlib.legend.Legend at 0x1c2444c9d0&gt;</pre>
+</div>
+
+</div>
+</div>
+<div class="jb_output_wrapper }}">
+<div class="output_area">
+
+
+
+<div class="output_png output_subarea ">
+<img src="../../images/labs/lab-frequency-domain/index_44_1.png"
+>
+</div>
+
+</div>
+</div>
+</div>
+</div>
+
+</div>
+</div>
+
+<div class="jb_cell">
+
+<div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h2 id="Exercise">Exercise<a class="anchor-link" href="#Exercise"> </a></h2><p>Use your implementation of <code>generate_signal_with_selected</code> to simulated a signal filtered by a high pass filter. Create a plot to compare to the signal obtained by using <code>filtfilt</code>. See if the two signals look similar.</p>
+
+</div>
+</div>
+</div>
+</div>
+
+<div class="jb_cell">
+
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">selected</span> <span class="o">=</span> <span class="n">generate_signal_with_selector</span><span class="p">(</span><span class="n">model</span><span class="p">,</span> <span class="mi">500</span><span class="p">,</span> <span class="k">lambda</span> <span class="n">df</span><span class="p">:</span> <span class="n">df</span><span class="p">[</span><span class="s1">&#39;freq&#39;</span><span class="p">]</span> <span class="o">&gt;</span> <span class="mi">25</span><span class="p">)</span>
+
+<span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">20</span><span class="p">,</span><span class="mi">5</span><span class="p">))</span>
+<span class="c1">## BEGIN SOLUTION</span>
+
+
+<span class="c1">## END SOLUTION</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">ylabel</span><span class="p">(</span><span class="s1">&#39;Intensity&#39;</span><span class="p">,</span> <span class="n">fontsize</span><span class="o">=</span><span class="mi">18</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="s1">&#39;Time&#39;</span><span class="p">,</span> <span class="n">fontsize</span><span class="o">=</span><span class="mi">18</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">legend</span><span class="p">([</span><span class="s1">&#39;Selected&#39;</span><span class="p">,</span><span class="s1">&#39;Filtered&#39;</span><span class="p">],</span> <span class="n">fontsize</span><span class="o">=</span><span class="mi">18</span><span class="p">)</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+<div class="jb_output_wrapper }}">
+<div class="output_area">
+
+
+
+<div class="output_text output_subarea output_execute_result">
+<pre>&lt;matplotlib.legend.Legend at 0x1c245aab90&gt;</pre>
+</div>
+
+</div>
+</div>
+<div class="jb_output_wrapper }}">
+<div class="output_area">
+
+
+
+<div class="output_png output_subarea ">
+<img src="../../images/labs/lab-frequency-domain/index_46_1.png"
+>
+</div>
+
+</div>
+</div>
+</div>
+</div>
+
+</div>
+</div>
+
+<div class="jb_cell">
+
+<div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h1 id="Low-Pass">Low Pass<a class="anchor-link" href="#Low-Pass"> </a></h1><p>Low pass filters only retain low frequency signals, which <em>removes</em> any high frequency information.</p>
+
+</div>
+</div>
+</div>
+</div>
+
+<div class="jb_cell">
+
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="kn">from</span> <span class="nn">scipy.signal</span> <span class="k">import</span> <span class="n">butter</span><span class="p">,</span> <span class="n">filtfilt</span>
+
+<span class="n">filter_order</span> <span class="o">=</span> <span class="mi">2</span> 
+<span class="n">frequency_cutoff</span> <span class="o">=</span> <span class="mi">10</span>
+<span class="n">sampling_frequency</span> <span class="o">=</span> <span class="mi">500</span>
+
+<span class="n">signal</span> <span class="o">=</span> <span class="n">generate_signal</span><span class="p">(</span><span class="n">model</span><span class="p">,</span> <span class="mi">500</span><span class="p">)</span>
+
+<span class="c1"># Create the filter</span>
+<span class="n">b</span><span class="p">,</span> <span class="n">a</span> <span class="o">=</span> <span class="n">butter</span><span class="p">(</span><span class="n">filter_order</span><span class="p">,</span> <span class="n">frequency_cutoff</span><span class="p">,</span> <span class="n">btype</span><span class="o">=</span><span class="s1">&#39;low&#39;</span><span class="p">,</span> <span class="n">output</span><span class="o">=</span><span class="s1">&#39;ba&#39;</span><span class="p">,</span> <span class="n">fs</span><span class="o">=</span><span class="n">sampling_frequency</span><span class="p">)</span>
+
+<span class="c1"># Apply the filter</span>
+<span class="n">filtered</span> <span class="o">=</span> <span class="n">filtfilt</span><span class="p">(</span><span class="n">b</span><span class="p">,</span> <span class="n">a</span><span class="p">,</span> <span class="n">signal</span><span class="p">)</span>
+
+<span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">20</span><span class="p">,</span><span class="mi">5</span><span class="p">))</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">signal</span><span class="p">[</span><span class="mi">0</span><span class="p">:</span><span class="mi">600</span><span class="p">],</span> <span class="n">linewidth</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">filtered</span><span class="p">[</span><span class="mi">0</span><span class="p">:</span><span class="mi">600</span><span class="p">],</span> <span class="n">linewidth</span><span class="o">=</span><span class="mi">4</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">ylabel</span><span class="p">(</span><span class="s1">&#39;Intensity&#39;</span><span class="p">,</span> <span class="n">fontsize</span><span class="o">=</span><span class="mi">18</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="s1">&#39;Time&#39;</span><span class="p">,</span> <span class="n">fontsize</span><span class="o">=</span><span class="mi">18</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">legend</span><span class="p">([</span><span class="s1">&#39;Original&#39;</span><span class="p">,</span><span class="s1">&#39;Filtered&#39;</span><span class="p">],</span> <span class="n">fontsize</span><span class="o">=</span><span class="mi">18</span><span class="p">)</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+<div class="jb_output_wrapper }}">
+<div class="output_area">
+
+
+
+<div class="output_text output_subarea output_execute_result">
+<pre>&lt;matplotlib.legend.Legend at 0x1c24789550&gt;</pre>
+</div>
+
+</div>
+</div>
+<div class="jb_output_wrapper }}">
+<div class="output_area">
+
+
+
+<div class="output_png output_subarea ">
+<img src="../../images/labs/lab-frequency-domain/index_48_1.png"
+>
+</div>
+
+</div>
+</div>
+</div>
+</div>
+
+</div>
+</div>
+
+<div class="jb_cell">
+
+<div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>What does the filter look like?</p>
+
+</div>
+</div>
+</div>
+</div>
+
+<div class="jb_cell">
+
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">filter_order</span> <span class="o">=</span> <span class="mi">2</span>
+<span class="n">frequency_cutoff</span> <span class="o">=</span> <span class="mi">10</span>
+<span class="n">sampling_frequency</span> <span class="o">=</span> <span class="mi">500</span>
+
+<span class="c1"># Create the filter</span>
+<span class="n">b</span><span class="p">,</span> <span class="n">a</span> <span class="o">=</span> <span class="n">butter</span><span class="p">(</span><span class="n">filter_order</span><span class="p">,</span> <span class="n">frequency_cutoff</span><span class="p">,</span> <span class="n">btype</span><span class="o">=</span><span class="s1">&#39;low&#39;</span><span class="p">,</span> <span class="n">output</span><span class="o">=</span><span class="s1">&#39;ba&#39;</span><span class="p">,</span> <span class="n">fs</span><span class="o">=</span><span class="n">sampling_frequency</span><span class="p">)</span>
+
+<span class="n">plot_filter</span><span class="p">(</span><span class="n">b</span><span class="p">,</span> <span class="n">a</span><span class="p">,</span> <span class="n">sampling_frequency</span><span class="p">)</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+<div class="jb_output_wrapper }}">
+<div class="output_area">
+
+
+
+<div class="output_png output_subarea ">
+<img src="../../images/labs/lab-frequency-domain/index_50_0.png"
+>
+</div>
+
+</div>
+</div>
+</div>
+</div>
+
+</div>
+</div>
+
+<div class="jb_cell">
+
+<div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h2 id="Exercise">Exercise<a class="anchor-link" href="#Exercise"> </a></h2><p>Use your implementation of <code>generate_signal_with_selected</code> to simulated a signal filtered by a low pass filter. Create a plot to compare to the signal obtained by using <code>filtfilt</code>. See if the two signals look similar.</p>
+
+</div>
+</div>
+</div>
+</div>
+
+<div class="jb_cell">
+
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">selected</span> <span class="o">=</span> <span class="n">generate_signal_with_selector</span><span class="p">(</span><span class="n">model</span><span class="p">,</span> <span class="mi">500</span><span class="p">,</span> <span class="k">lambda</span> <span class="n">df</span><span class="p">:</span> <span class="n">df</span><span class="p">[</span><span class="s1">&#39;freq&#39;</span><span class="p">]</span> <span class="o">&lt;=</span> <span class="mi">10</span><span class="p">)</span>
+
+<span class="c1"># TODO: create a plot to compare two signals</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+</div>
+</div>
+
+<div class="jb_cell">
+
+<div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h1 id="Bandpass">Bandpass<a class="anchor-link" href="#Bandpass"> </a></h1><p>Bandpass filters permit retaining only a specific frequency. Morlet wavelets are an example of a bandpass filter.  or example a Morlet wavelet is a gaussian with the peak frequency at the center of a bandpass filter.</p>
+<p>Let's try selecting removing specific frequencies</p>
+
+</div>
+</div>
+</div>
+</div>
+
+<div class="jb_cell">
+
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">filter_order</span> <span class="o">=</span> <span class="mi">2</span> 
+<span class="n">lowcut</span> <span class="o">=</span> <span class="mi">7</span>
+<span class="n">highcut</span> <span class="o">=</span> <span class="mi">13</span>
+
+<span class="c1"># Create the filter</span>
+<span class="n">b</span><span class="p">,</span> <span class="n">a</span> <span class="o">=</span> <span class="n">butter</span><span class="p">(</span><span class="n">filter_order</span><span class="p">,</span> <span class="p">[</span><span class="n">lowcut</span><span class="p">,</span> <span class="n">highcut</span><span class="p">],</span> <span class="n">btype</span><span class="o">=</span><span class="s1">&#39;bandpass&#39;</span><span class="p">,</span> <span class="n">output</span><span class="o">=</span><span class="s1">&#39;ba&#39;</span><span class="p">,</span> <span class="n">fs</span><span class="o">=</span><span class="n">sampling_frequency</span><span class="p">)</span>
+
+<span class="c1"># Apply the filter</span>
+<span class="n">filtered</span> <span class="o">=</span> <span class="n">filtfilt</span><span class="p">(</span><span class="n">b</span><span class="p">,</span> <span class="n">a</span><span class="p">,</span> <span class="n">signal</span><span class="p">)</span>
+
+<span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">20</span><span class="p">,</span><span class="mi">5</span><span class="p">))</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">signal</span><span class="p">,</span> <span class="n">linewidth</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">filtered</span><span class="p">,</span> <span class="n">linewidth</span><span class="o">=</span><span class="mi">4</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">ylabel</span><span class="p">(</span><span class="s1">&#39;Intensity&#39;</span><span class="p">,</span> <span class="n">fontsize</span><span class="o">=</span><span class="mi">18</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="s1">&#39;Time&#39;</span><span class="p">,</span> <span class="n">fontsize</span><span class="o">=</span><span class="mi">18</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">legend</span><span class="p">([</span><span class="s1">&#39;Original&#39;</span><span class="p">,</span><span class="s1">&#39;Filtered&#39;</span><span class="p">],</span> <span class="n">fontsize</span><span class="o">=</span><span class="mi">18</span><span class="p">)</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+<div class="jb_output_wrapper }}">
+<div class="output_area">
+
+
+
+<div class="output_text output_subarea output_execute_result">
+<pre>&lt;matplotlib.legend.Legend at 0x1c24d6b550&gt;</pre>
+</div>
+
+</div>
+</div>
+<div class="jb_output_wrapper }}">
+<div class="output_area">
+
+
+
+<div class="output_png output_subarea ">
+<img src="../../images/labs/lab-frequency-domain/index_54_1.png"
+>
+</div>
+
+</div>
+</div>
+</div>
+</div>
+
+</div>
+</div>
+
+<div class="jb_cell">
+
+<div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h2 id="Exercise">Exercise<a class="anchor-link" href="#Exercise"> </a></h2><p>Use your implementation of <code>generate_signal_with_selected</code> to simulated a signal filtered by a band pass filter. Create a plot to compare to the signal obtained by using <code>filtfilt</code>. See if the two signals look similar.</p>
+
+</div>
+</div>
+</div>
+</div>
+
+<div class="jb_cell">
+
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span>    <span class="c1"># TODO: create a plot to compare &#39;filtered&#39; to a simulated filtered signal</span>
+    <span class="c1"># obtained by `generate_signal_with_selected`</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+</div>
+</div>
+
+<div class="jb_cell">
+
+<div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h1 id="Band-Stop">Band-Stop<a class="anchor-link" href="#Band-Stop"> </a></h1><p>Bandstop filters remove a specific frequency from the signal</p>
+
+</div>
+</div>
+</div>
+</div>
+
+<div class="jb_cell">
+
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">filter_order</span> <span class="o">=</span> <span class="mi">2</span> 
+<span class="n">lowcut</span> <span class="o">=</span> <span class="mi">8</span>
+<span class="n">highcut</span> <span class="o">=</span> <span class="mi">12</span>
+
+<span class="c1"># Create the filter</span>
+<span class="n">b</span><span class="p">,</span><span class="n">a</span> <span class="o">=</span> <span class="n">butter</span><span class="p">(</span><span class="n">filter_order</span><span class="p">,</span> <span class="p">[</span><span class="n">lowcut</span><span class="p">,</span> <span class="n">highcut</span><span class="p">],</span> <span class="n">btype</span><span class="o">=</span><span class="s1">&#39;bandstop&#39;</span><span class="p">,</span> <span class="n">output</span><span class="o">=</span><span class="s1">&#39;ba&#39;</span><span class="p">,</span> <span class="n">fs</span><span class="o">=</span><span class="n">sampling_frequency</span><span class="p">)</span>
+
+<span class="c1"># Plot the filter</span>
+<span class="n">plot_filter</span><span class="p">(</span><span class="n">b</span><span class="p">,</span> <span class="n">a</span><span class="p">,</span> <span class="n">sampling_frequency</span><span class="p">)</span>
+
+<span class="c1"># Apply the filter</span>
+<span class="n">filtered</span> <span class="o">=</span> <span class="n">filtfilt</span><span class="p">(</span><span class="n">b</span><span class="p">,</span> <span class="n">a</span><span class="p">,</span> <span class="n">signal</span><span class="p">)</span>
+
+<span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">20</span><span class="p">,</span><span class="mi">5</span><span class="p">))</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">signal</span><span class="p">[</span><span class="mi">0</span><span class="p">:</span><span class="mi">200</span><span class="p">],</span> <span class="n">linewidth</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">filtered</span><span class="p">[</span><span class="mi">0</span><span class="p">:</span><span class="mi">200</span><span class="p">],</span> <span class="n">linewidth</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">ylabel</span><span class="p">(</span><span class="s1">&#39;Intensity&#39;</span><span class="p">,</span> <span class="n">fontsize</span><span class="o">=</span><span class="mi">18</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="s1">&#39;Time&#39;</span><span class="p">,</span> <span class="n">fontsize</span><span class="o">=</span><span class="mi">18</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">legend</span><span class="p">([</span><span class="s1">&#39;Original&#39;</span><span class="p">,</span><span class="s1">&#39;Filtered&#39;</span><span class="p">],</span> <span class="n">fontsize</span><span class="o">=</span><span class="mi">18</span><span class="p">)</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+<div class="jb_output_wrapper }}">
+<div class="output_area">
+
+
+
+<div class="output_text output_subarea output_execute_result">
+<pre>&lt;matplotlib.legend.Legend at 0x1c23fe6190&gt;</pre>
+</div>
+
+</div>
+</div>
+<div class="jb_output_wrapper }}">
+<div class="output_area">
+
+
+
+<div class="output_png output_subarea ">
+<img src="../../images/labs/lab-frequency-domain/index_58_1.png"
+>
+</div>
+
+</div>
+</div>
+<div class="jb_output_wrapper }}">
+<div class="output_area">
+
+
+
+<div class="output_png output_subarea ">
+<img src="../../images/labs/lab-frequency-domain/index_58_2.png"
+>
+</div>
+
+</div>
+</div>
+</div>
+</div>
+
+</div>
+</div>
+
+<div class="jb_cell">
+
+<div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h2 id="Exercise">Exercise<a class="anchor-link" href="#Exercise"> </a></h2><p>Use your implementation of <code>generate_signal_with_selected</code> to simulated a signal filtered by a band stop filter. Create a plot to compare to the signal obtained by using <code>filtfilt</code>. See if the two signals look similar.</p>
+
+</div>
+</div>
+</div>
+</div>
+
+<div class="jb_cell">
+
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="c1"># TODO: create a plot to compare &#39;filtered&#39; to a simulated filtered signal</span>
+<span class="c1"># obtained by `generate_signal_with_selected`</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+</div>
+</div>
+
+<div class="jb_cell">
+
+<div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h1 id="Exercise">Exercise<a class="anchor-link" href="#Exercise"> </a></h1><p>Apply what you've learned from this lab to analyze a "bad" signal to uncover the good signal hidden within. Let's suppose we somehow know that the bad signal is the result of a good signal being affected by a drift and a strong high frequenct noises.</p>
+<p>Let's load the two signals and plot them.</p>
+
+</div>
+</div>
+</div>
+</div>
+
+<div class="jb_cell">
+
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">good</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="s1">&#39;good_signal.npy&#39;</span><span class="p">)</span>
+<span class="n">bad</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="s1">&#39;bad_signal.npy&#39;</span><span class="p">)</span>
+
+<span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">20</span><span class="p">,</span><span class="mi">5</span><span class="p">))</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">bad</span><span class="p">,</span> <span class="n">linewidth</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">good</span><span class="p">,</span> <span class="n">linewidth</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+<div class="jb_output_wrapper }}">
+<div class="output_area">
+
+
+
+<div class="output_text output_subarea output_execute_result">
+<pre>[&lt;matplotlib.lines.Line2D at 0x1c30858490&gt;]</pre>
+</div>
+
+</div>
+</div>
+<div class="jb_output_wrapper }}">
+<div class="output_area">
+
+
+
+<div class="output_png output_subarea ">
+<img src="../../images/labs/lab-frequency-domain/index_62_1.png"
+>
+</div>
+
+</div>
+</div>
+</div>
+</div>
+
+</div>
+</div>
+
+<div class="jb_cell">
+
+<div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>Now, write code to recover the good signal and plot the result. Discuss what the properties of the high frequency noise and drift might be.</p>
+
+</div>
+</div>
+</div>
+</div>
+
+<div class="jb_cell">
+
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="c1">### BEGIN SOLUTION</span>
+
+
+<span class="c1">### END SOLUTION</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+</div>
+</div>
+
+ 
+
+
+    </main>
+    
+            </div>
+            <div class="c-textbook__footer" id="textbook_footer">
+              
+<nav class="c-page__nav">
+  
+    
+    
+
+    <a id="js-page__nav__prev" class="c-page__nav__prev" href="/bai-book/labs/lab-signal-processing/index.html">
+      〈 <span class="u-margin-right-tiny"></span> Lab - Signal Processing
+    </a>
+  
+
+  
+    
+
+    
+    <a id="js-page__nav__next" class="c-page__nav__next" href="/bai-book/units/fmri-analysis.html">
+      fMRI Analysis <span class="u-margin-right-tiny"></span> 〉
+    </a>
+  
+</nav>
+
+              <footer>
+  <p class="footer">This page was created by <a href="https://github.com/jupyter/jupyter-book/graphs/contributors">The Jupyter Book Community</a></p>
+</footer>
+
+            </div>
+
+        </div>
+      </main>
+    </div>
+  </body>
+</html>
